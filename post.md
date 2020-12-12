@@ -7,8 +7,25 @@ The benefits are CSS encapsulation, ease of use and support all major browsers. 
 
 Building a primitive web component was surprisingly easy to me (considering notoriously clunky DOM APIs).
 
-CODE EXAMPLE (index.jsx - with static text, no glowing effect yet)
-EvilPlanElement.jsx
+```javascript
+/** src/EvilPlanElement.jsx */
+
+import React from "react";
+import ReactDOM from "react-dom";
+
+class EvilPlanElement extends HTMLElement {
+  connectedCallback() {
+    ReactDOM.render(<button onClick={() => alert("one million dollars!")}>Hold the world ransom for...</button>, this);
+  }
+}
+
+const tagName = "evil-plan";
+
+if (!window.customElements.get(tagName)) {
+  // prevent rerunning on hot module reloads
+  window.customElements.define(tagName, EvilPlanElement);
+}
+```
 
 First you defined a class inheriting from HtmlElement
 Second you register it using
@@ -25,9 +42,9 @@ That was fast!
 
 ## Preview
 
-Using it in a static html page is easy. In a root of my pet project I have a file `public/index.html`
+Using it in a static html page is easy. In a root of my pet project I have a file `public/index.html`:
 
-```
+```html
 <!DOCTYPE html>
 <html>
   <head>
@@ -41,11 +58,11 @@ Using it in a static html page is easy. In a root of my pet project I have a fil
 
 > If you use `create-react-app`, you can just put the code from `EvilPlanElement.jsx` in your `src/index.jsx` file. Then type your custom element within `<body>` same as in the example above. Webpack will insert script tag for you _on the flight_.
 
-This works alright, but my gut feeling was - there must be a lot of corner cases. But not really, at least not in production. It is supported in all major browsers except IE and Edge 16-18 (before Edge migrated to use Chromium under the hood) (TODO: just put icons with versions). If you’re really anxious, you can use this [polyfill](https://github.com/webcomponents/polyfills)
+This works alright, but there must be a lot of corner cases, right? Not really, at least not in production. It is supported in [all major browsers](https://caniuse.com/custom-elementsv1) except IE and Edge 16-18 (before Edge migrated to use Chromium under the hood) (TODO: just put icons with versions). If you’re really anxious, you can use this [polyfill](https://github.com/webcomponents/polyfills)
 
 ### Passing data (attributes and properties)
 
-One annoying bit in an HTML element not every property corresponds to an attribute, and watching data changes on both of them is two different stories.
+One annoying bit in that in HTML elements not every property corresponds to an attribute, and watching data changes on both is two different stories.
 
 CODE EXAMPLE (index.jsx - accepting text through a value attribute)
 
@@ -57,7 +74,7 @@ I looked at two most popular libraries to declaratively build web components
 TODO: lit-component by Polimer project
 TODO: StencilJS
 
-TODO: decorators - they awent thro a total rewrite and the lattest Stage 2 proposal is very different from previous and sot supported by Babel and Typescript yet (I think everyone is waiting for Stage 3).
+I thought of a few neat decorators for attribute/property wiring. Sadly the latest version of [decorator proposal](https://github.com/tc39/proposal-decorators) is a total rewrite and is not yet supported by either Babel or Typescript.
 
 ## What's the topic
 
@@ -73,8 +90,8 @@ If you are developing a usual business app, total separation of your micro Front
 </body>
 
 The consuming team will only need to know a url where I deployed my bundled component.
-
-TODO: Link to codesandbox, or, at least, github (url expiry would be a problem, so better github)
+I decided to deploy my bundle to GitHub Pages using package `gh-pages`
+https://github.com/tschaub/gh-pages
 
 ## Advanced use
 
