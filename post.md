@@ -1,30 +1,63 @@
-# Web Component as a Microfrontend
+# React in a Web Component
 
-Only a decade ago a popular approach to managing teams in a company was to create talent pools based on the service layer an employee belongs to. A sysadmin, db developer, ux etc - you‘d have to mainly hang around your own ‘kind’ of human resource. Us versus them ensues.
-Now we get to have cross-functional teams, and a blend of responsibilities in each person. And obeying good old [Convey’s law](https://en.wikipedia.org/wiki/Conway%27s_law) we go on to design stuff with way we communicate within the company. We take a slice of a product and build it from the ground up. One of the way making the frontend part of the slice is to package it all up in a web component.
+Recently I decided to experiment with setting up a microforontend app. It will be written in React and I thought of wrapping it in a web component.
+The benefits are CSS encapsulation, ease of use and support all major browsers. A consuming web app will simply render an instance of the component and load an accompanying app bundle.
 
 ## First web component
 
-For me building a simple web component was surprisingly easy (considering notoriously clunky DOM APIs)
+Building a primitive web component was surprisingly easy to me (considering notoriously clunky DOM APIs).
 
 CODE EXAMPLE (index.jsx - with static text, no glowing effect yet)
+EvilPlanElement.jsx
 
-Let’s bundle it up. I'm using a new blazingly fast library [esbuild](TODO: link), the whole bundle is done in 35ms! \*(TODO: maybe screenshot of the console instead)
+First you defined a class inheriting from HtmlElement
+Second you register it using
+`window.customElements.define("evil-plan", EvilPlanElement)`
+
+> Make sure you define your element with a prefix, e.g. `evil-`: <br>`window.customElements.define("evil-plan", EvilPlanElement)`
+
+> Currently, there is no API to remove or rederfine your element. You would not care about it in production. But during development hot module reload will trigger another call to `window.customElements.define` which results in error `TODO: error text`
+
+Let’s bundle it up! I'm using a new shiny new library [esbuild](TODO: link).
+`esbuild src/EvilPlanElement.jsx --outfile=EvilPlanElement.min.js --bundle --minify --define:process.env.NODE_ENV='production' --target=chrome58,firefox57,safari11,edge16`
+TODO: Screenshot of 'done in 0.24s'
+That was fast!
 
 ## Preview
 
-Now lets use our component on a web page, like we could even in production:
-CODE EXAMPLE (index.html) (TODO: defer ? or async? Do we care?)
+Using it in a static html page is easy. In a root of my pet project I have a file `public/index.html`
 
-This works alright, but my gut feeling was - there must be a lot of corner cases. But not really. It is supported on all major browsers except IE and Edge 16-18 (before they moved to Chromium engine) (just put icons with versions). If you’re really anxious, you can use this [polyfill](https://github.com/webcomponents/polyfills)
+```
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="../EvilPlanElement.min.js"></script>
+  </head>
+  <body>
+    <evil-plan></evil-plan>
+  </body>
+</html>
+```
 
-Now lets pass a value
+> If you use `create-react-app`, you can just put the code from `EvilPlanElement.jsx` in your `src/index.jsx` file. Then type your custom element within `<body>` same as in the example above. Webpack will insert script tag for you _on the flight_.
+
+This works alright, but my gut feeling was - there must be a lot of corner cases. But not really, at least not in production. It is supported in all major browsers except IE and Edge 16-18 (before Edge migrated to use Chromium under the hood) (TODO: just put icons with versions). If you’re really anxious, you can use this [polyfill](https://github.com/webcomponents/polyfills)
+
+### Passing data (attributes and properties)
+
+One annoying bit in an HTML element not every property corresponds to an attribute, and watching data changes on both of them is two different stories.
 
 CODE EXAMPLE (index.jsx - accepting text through a value attribute)
 
-Let’s tidy up using a tiny decorator (TODO: for component name, also maybe for attribute passing).
-
 CODE EXAMPLE
+
+### Libraries and refactoring
+
+I looked at two most popular libraries to declaratively build web components
+TODO: lit-component by Polimer project
+TODO: StencilJS
+
+TODO: decorators - they awent thro a total rewrite and the lattest Stage 2 proposal is very different from previous and sot supported by Babel and Typescript yet (I think everyone is waiting for Stage 3).
 
 ## What's the topic
 
