@@ -27,8 +27,7 @@ if (!window.customElements.get(tagName)) {
 }
 ```
 
-First you defined a class inheriting from HtmlElement
-Second you register it using
+First I define a class inheriting from HtmlElement. Then I register it using
 `window.customElements.define("evil-plan", EvilPlanElement)`
 
 > Make sure you define your element with a prefix, e.g. `evil-`: <br>`window.customElements.define("evil-plan", EvilPlanElement)`
@@ -58,7 +57,7 @@ Using it in a static html page is easy. In a root of my pet project I have a fil
 
 > If you use `create-react-app`, you can just put the code from `EvilPlanElement.jsx` in your `src/index.jsx` file. Then type your custom element within `<body>` same as in the example above. Webpack will insert script tag for you _on the flight_.
 
-This works alright, but there must be a lot of corner cases, right? Not really, at least not in production. It is supported in [all major browsers](https://caniuse.com/custom-elementsv1) except IE and Edge 16-18 (before Edge migrated to use Chromium under the hood) (TODO: just put icons with versions). If you’re really anxious, you can use this [polyfill](https://github.com/webcomponents/polyfills)
+This works alright, but there must be a lot of corner cases, right? Not really, at least not in production. Web components are supported in [all major browsers](https://caniuse.com/custom-elementsv1) except IE and Edge 16-18 (before Edge migrated to use Chromium under the hood) (TODO: just put icons with versions). If you’re really anxious, you can use this [polyfill](https://github.com/webcomponents/polyfills)
 
 ### Passing data (attributes and properties)
 
