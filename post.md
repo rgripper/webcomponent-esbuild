@@ -5,7 +5,7 @@ The benefits are CSS encapsulation, ease of use and support all major browsers. 
 
 ## First web component
 
-Building a primitive web component was surprisingly easy to me (considering notoriously clunky DOM APIs).
+Building a primitive web component was surprisingly easy (considering the notoriously clunky DOM APIs).
 
 ```javascript
 /** src/EvilPlanElement.jsx */
