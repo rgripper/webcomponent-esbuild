@@ -30,11 +30,11 @@ if (!window.customElements.get(tagName)) {
 First I defined a class inheriting from HtmlElement. Then I registered it using
 `window.customElements.define("evil-plan", EvilPlanElement)`
 
-> Make sure you define your element with a prefix, e.g. `evil-`: <br>`window.customElements.define("evil-plan", EvilPlanElement)`
+> Make sure you define custom elements with a prefix, e.g. `myproj-button`
 
 > Currently, there is no API to remove or redefine your element. You would not care about it in production. But in dev mode the hot module reloading will trigger another call to `window.customElements.define` that will trigger error `TODO: error text`
 
-Let’s bundle it up! I'm using a shiny new library [esbuild](TODO: link).
+Let’s bundle it up! I'm using a shiny new library [esbuild](TODO: link).<br/>
 `esbuild src/EvilPlanElement.jsx --outfile=EvilPlanElement.min.js --bundle --minify --define:process.env.NODE_ENV='production' --target=chrome58,firefox57,safari11,edge16`
 TODO: Screenshot of 'done in 0.24s'
 That was fast!
