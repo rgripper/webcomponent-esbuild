@@ -1,4 +1,4 @@
-# React in a Web Component
+# Wrapping React App in Web Component
 
 Recently I decided to experiment with setting up a microforontend app. It will be written in React and I thought of wrapping it in a web component.
 The benefits are CSS encapsulation, ease of use and support all major browsers. A consuming web app will simply render an instance of the component and load an accompanying app bundle.
