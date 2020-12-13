@@ -5,7 +5,7 @@ The benefits are CSS encapsulation, ease of use by other developers and support 
 
 ## First web component
 
-Building a primitive web component was surprisingly easy (considering the notoriously clunky DOM APIs).
+Making a primitive web component was surprisingly easy (considering the notoriously clunky DOM APIs).
 
 ```javascript
 /** src/EvilPlanElement.jsx */
@@ -27,14 +27,14 @@ if (!window.customElements.get(tagName)) {
 }
 ```
 
-First I define a class inheriting from HtmlElement. Then I register it using
+First I defined a class inheriting from HtmlElement. Then I registered it using
 `window.customElements.define("evil-plan", EvilPlanElement)`
 
 > Make sure you define your element with a prefix, e.g. `evil-`: <br>`window.customElements.define("evil-plan", EvilPlanElement)`
 
-> Currently, there is no API to remove or rederfine your element. You would not care about it in production. But during development hot module reload will trigger another call to `window.customElements.define` which results in error `TODO: error text`
+> Currently, there is no API to remove or redefine your element. You would not care about it in production. But in dev mode the hot module reloading will trigger another call to `window.customElements.define` that will trigger error `TODO: error text`
 
-Let’s bundle it up! I'm using a new shiny new library [esbuild](TODO: link).
+Let’s bundle it up! I'm using a shiny new library [esbuild](TODO: link).
 `esbuild src/EvilPlanElement.jsx --outfile=EvilPlanElement.min.js --bundle --minify --define:process.env.NODE_ENV='production' --target=chrome58,firefox57,safari11,edge16`
 TODO: Screenshot of 'done in 0.24s'
 That was fast!
@@ -55,13 +55,13 @@ Using it in a static html page is easy. In a root of my pet project I have a fil
 </html>
 ```
 
-> If you use `create-react-app`, you can just put the code from `EvilPlanElement.jsx` in your `src/index.jsx` file. Then type your custom element within `<body>` same as in the example above. Webpack will insert script tag for you _on the flight_.
+> If you use `create-react-app`, you can just put the code from `EvilPlanElement.jsx` in your `src/index.jsx` file. Then type your custom element within `<body>` is the same as in the example above. Webpack will insert a script tag for you _on the flight_.
 
-This works alright, but there must be a lot of corner cases, right? Not really, at least not in production. Web components are supported in [all major browsers](https://caniuse.com/custom-elementsv1) except IE and Edge 16-18 (before Edge migrated to use Chromium under the hood) (TODO: just put icons with versions). If you’re really anxious, you can use this [polyfill](https://github.com/webcomponents/polyfills)
+This worked alright, but there must be a lot of corner cases, right? Not really, at least not in production. Web components are supported in [all major browsers](https://caniuse.com/custom-elementsv1) except IE and Edge 16-18 (before Edge migrated to use Chromium under the hood) (TODO: just put icons with versions). If you have to support legacy browsers, use this [polyfill](https://github.com/webcomponents/polyfills)
 
 ### Passing data (attributes and properties)
 
-One annoying bit in that in HTML elements not every property corresponds to an attribute, and watching data changes on both is two different stories.
+One annoying bit in that in HTML elements not every property corresponds to an attribute with the same name, so listening to changes of both is two different stories.
 
 CODE EXAMPLE (index.jsx - accepting text through a value attribute)
 
