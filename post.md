@@ -1,7 +1,7 @@
-# Wrapping React App in Web Component
+# Wrapping a React App in a Web Component
 
 Recently I decided to experiment with setting up a microforontend app. It will be written in React and I thought of wrapping it in a web component.
-The benefits are CSS encapsulation, ease of use by other developers and support in all major browsers. A consuming web app will simply render an instance of my component and load an accompanying app bundle.
+Main benefits are CSS encapsulation, ease of use by other developers and support in all major browsers. A consuming web app will simply render an instance of my component and load an accompanying app bundle. Total independence of the bundle will allow other teams building parts of frontend to choose frameworks and libraries they like, without having everyone locked into a certain version of, say, Angular (at the price of having a heavy web app).
 
 ## First web component
 
@@ -32,12 +32,7 @@ First I defined a class inheriting from HtmlElement. Then I registered it using
 
 > Make sure you define custom elements with a prefix, e.g. `myproj-button`
 
-> Currently, there is no API to remove or redefine your element. You would not care about it in production. But in dev mode the hot module reloading will trigger another call to `window.customElements.define` that will trigger error `TODO: error text`
-
-Let’s bundle it up! I'm using a shiny new library [esbuild](TODO: link).<br/>
-`esbuild src/EvilPlanElement.jsx --outfile=EvilPlanElement.min.js --bundle --minify --define:process.env.NODE_ENV='production' --target=chrome58,firefox57,safari11,edge16`
-TODO: Screenshot of 'done in 0.24s'
-That was fast!
+> Currently, there is no API to remove or redefine custom elements. You would not care about it in production. But in dev mode there is Hot Module Reloading. Any change in the module containing your element will cause it to be eloaded in the browser and initialization code to rerun. That would lead to another call to `window.customElements.define` and subsequent error `TODO: error text`. TODO: rewrite it with a better explanation
 
 ## Preview
 
@@ -67,40 +62,25 @@ CODE EXAMPLE (index.jsx - accepting text through a value attribute)
 
 CODE EXAMPLE
 
-### Libraries and refactoring
+I thought of writing a few neat decorators for attribute/property wiring. Sadly, the latest version of [decorator proposal](https://github.com/tc39/proposal-decorators) is a total rewrite and is not yet supported by either Babel or Typescript.
 
-I looked at two most popular libraries to declaratively build web components
-TODO: lit-component by Polimer project
-TODO: StencilJS
+### Bundling and Deployment
 
-I thought of a few neat decorators for attribute/property wiring. Sadly the latest version of [decorator proposal](https://github.com/tc39/proposal-decorators) is a total rewrite and is not yet supported by either Babel or Typescript.
+Let’s bundle it up! I'm using a shiny new library [esbuild](TODO: link).<br/>
+`esbuild src/EvilPlanElement.jsx --outfile=EvilPlanElement.min.js --bundle --minify --define:process.env.NODE_ENV='production' --target=chrome58,firefox57,safari11,edge16`
+'Done in 0.38s' - that was fast!
 
-## What's the topic
-
-If you are developing a usual business app, total separation of your micro Frontend code is the most productive option. (TODO: No talking to other teams (cheap to maintain? Communication chaos?))
-
-...
-(once per page // TODO: how to guarantee once per page call? In html we just manually put the script in the head and call defer)
-<my-component val=”1”>
-...
-<my-component val=”2”>
-...
-
-</body>
-
-The consuming team will only need to know a url where I deployed my bundled component.
-I decided to deploy my bundle to GitHub Pages using package `gh-pages`
+I decided to do it on GitHub Pages using package `gh-pages`
 https://github.com/tschaub/gh-pages
 
-## Advanced use
+// TODO: meybe we don't need that
+> Your scripts are not isolated from any other scripts on the page, and there are only partial solutions out there (e.g. using WebWorkers with (channel messaging)[https://developer.mozilla.org/en-US/docs/Web/API/Channel_Messaging_API])
 
-Gotchas:
-Yes, overriding globals is evil so both micro frontends and shell app should be careful with libraries they use.
+## CSS story
 
-TODO: EXAMPLE
-Accessing document's head from microfrontend also breaks the rules. EG some libraries you use might try Inserting some CSS globally and not inside your web component. Your javascript scope is not isolated, and there are only partial solutions out there (eg using WebWorkers with (channel messaging)[https://developer.mozilla.org/en-US/docs/Web/API/Channel_Messaging_API]). But you can isolate CSS by adding an optional shadow root. It will prevent global styles from affecting your component.
+One of the selling points of web components is CSS isolation. Every global style, say `h1 { color: red }` will only get applied within a special node called [ShadowRoot](https://developer.mozilla.org/en-US/docs/Web/API/ShadowRoot) within the web component. To find it you need to turn Settings in chrome to display it. Actually, even built-in elements, like `<select>` contain a shadow root.
 
-CODE EXAMPLE (GlowingText.jsx with Emotion CSS)
+TODO: screenshot of a shadow root in Chrome inspector
 
 I’m using package `@emotion/react` to inject CSS. For this simple component I decided to avoid setting up create-react-app with babel and webpack under the hood. I simply add JSX pragma in the beginning of every component file where I use `emotion` (link to emotion React pragma). In this case default style injection produces the following style tags:
 
@@ -108,4 +88,6 @@ SCREENSHOT OF HTML with style tags in the HEAD
 
 Yes, it’s using `<head>`! There is a react-specific solution to it - `CacheProvider`, the context provider for `emotion`’s config. (The name choice is surprising until I remembered that by caching it means injecting and caching styles in DOM?document?). We only need to declare it once in our root component - any of our microfrontend calls to `css` helper will inject-cache styles in our root and not in `<head>`
 
-TBC...
+SCREENSHOT OF HTML with style tags under a shadow root
+
+TODO: a paragraph of conclusion
