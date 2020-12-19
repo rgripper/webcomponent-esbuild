@@ -1,9 +1,22 @@
-# Wrapping a React App in a Web Component
+# React + Web Component = Microfrontend
 
-Recently I decided to experiment with setting up a microforontend app. It will be written in React and I thought of wrapping it in a web component.
-Main benefits are CSS encapsulation, ease of use by other developers and support in all major browsers. A consuming web app will simply render an instance of my component and load an accompanying app bundle. Total independence of the bundle will allow other teams building parts of frontend to choose frameworks and libraries they like, without having everyone locked into a certain version of, say, Angular. The only downside will be the overall size of downloaded files.
+## What's with the microfrontend stuff?
 
-## First web component
+Recently I decided to understand more about building and integrating a microforontend. 
+You might hear about this stuff when your company wants multiple teams to build a big new web project. The company does not want teams to fight over a single monsterous SPA. It desides to break the project down into several mini-apps orchestrated by a shell app. Each team then can work in isolation, pick their own tech stack, preferred flavour of agile and so on.
+
+## Concept
+
+Now comes a question of tech to glue mini-apps to a shell app. It would consist of an _Adaptor_ for a child app, and a _Loader_ in a shell app. Adaptor defines a protocol to mount/unmount and exchange data with a mini-app, converting Angular- or React- specific details to a neutral form. Loader simply loads child bundles and runs Adaptors within the shell app.
+
+One of the popular implementations of the concept is [single-spa](https://single-spa.js.org/). It has several adaptors written for the most popular frameworks: React, Angular, etc. Loader there also acts as a primary router, loading and unloading child apps based on a url.
+
+## My setup
+
+I decided to try something more barebones: Web Components. They are a browser standard that works well as an Adaptor. Web components track their own loading, unloading and changes to properties and HTML attributes. Another huge benefit is CSS encapsulation (more on that below). But of course I will have to bind React stuff to a web component. As for the Loader, it is quite simple -
+shell app simply renders `<my-mini-app>` tag and loads an accompanying mini-app bundle (order should not matter).
+
+## Simple web component
 
 Making a primitive web component was surprisingly easy (considering the notoriously clunky DOM APIs).
 
@@ -32,7 +45,7 @@ First I defined a class inheriting from HtmlElement. Then I registered it using
 
 > Make sure you define custom elements with a prefix, e.g. `myproj-button`
 
-> Currently, there is no API to remove or redefine custom elements. You would not care about it in production. But in dev mode there is Hot Module Reloading. Any change in the module containing your element will cause it to be eloaded in the browser and initialization code to rerun. That would lead to another call to `window.customElements.define` and subsequent error `TODO: error text`. TODO: rewrite it with a better explanation
+> Currently, there is no API to remove or redefine custom elements. You would not care about it in production. But in dev mode you probably run a Hot Module Reloader (HMR). You make a change in your code and HMR reruns it without refreshing the page. Your code makes a call to `window.customElements.define` **again** with the same tag name. Bam! You've got an error: `Uncaught DOMException: CustomElementRegistry.define: 'evil-plan' has already been defined as a custom element`.
 
 ## Preview
 
