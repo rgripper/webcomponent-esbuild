@@ -122,6 +122,7 @@ yarn add -D esbuild
 ```
 
 Then add/update `build` command in your `package.json`:
+
 ```json
   "scripts": {
     ...
@@ -152,11 +153,13 @@ Using it in a static html page is easy. In a root of my pet project I have a fil
 ```
 
 To deploy it to Github Pages, I used a package [gh-pages](https://www.npmjs.com/package/gh-pages).
+
 ```
 yarn add -D gh-pages
 ```
 
 Then I added a `deploy` command to `package.json`:
+
 ```json
   "scripts": {
     ...
@@ -165,6 +168,7 @@ Then I added a `deploy` command to `package.json`:
 ```
 
 Then I ran the command
+
 ```
 yarn deploy
 
@@ -173,6 +177,7 @@ Done in 11.38s.
 ```
 
 Now it is accessible on https://rgripper.github.io/blog-webcomponent-props/
+
 > URL format for a deployed web app is `https://<username>.github.io/<reponame>/`
 
 This worked alright, but there must be a lot of corner cases, right? Not really, at least not in production. Web components are supported in [all major browsers](https://caniuse.com/custom-elementsv1) except IE and Edge 16-18 (before Edge migrated to use Chromium under the hood). If you have to support legacy browsers, use this [polyfill](https://github.com/webcomponents/polyfills)
@@ -193,10 +198,41 @@ If you'd like to poke my code, you can use my repo or a linked codesandbox here
 https://codesandbox.io/s/github/rgripper/blog-webcomponent-props
 
 Of course it is very basic, an custom component can be generalised and put into a separate package, exposing just a helper function, used like this:
+
 ```javascript
-defineWebComponent('evil-plan', App, ['appPropName1', 'appPropName2']);
+defineWebComponent("evil-plan", App, ["appPropName1", "appPropName2"]);
 ```
+
 It would create an anonymous HTMLElement, define it and wire the props.
 
 ## Final thoughts
 
+It was pretty hard decide what to pick for an actual project - Web Components or single-spa. Here are the pros and cons:
+
+### Single SPA
+
+**Pros**
+
+Popular repo, a few maintainers
+Has nice documentation (though a bit confusing/overwhelming)
+Adaptor is small and easy to apply
+Has a CRA-like project bootstrapper that adds webpack magic for you
+
+**Cons**
+
+You need to learn a custom framework
+Webpack stuff is magical, relies on SystemJS (which is not that popular anymore)
+I haven't found any built-in CSS/CSS-module wiring
+
+### Web components
+
+**Pros**
+
+Well-documentend standard Web Component API.
+Writing Loader is easy and can be used with any Router
+
+**Cons**
+
+Web Component API/lifecycle is not straightforward
+You need to support it (I only found one react-to-web-component helper)
+You either bundle into one big script file, or load chunks reading `asset-manifest.json`, produced by CRA `build` command.
